@@ -1,25 +1,32 @@
-import logo from './logo.svg';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect } from 'react';
 import './App.css';
+import { connect } from 'react-redux';
+import { getPosts as getPostsAction, deletePost as deletePostAction } from './redux/modules/posts';
+import { Post } from './components/Post';
+import CreatePost from './components/createPost';
 
-function App() {
+function App({ posts, getPosts, deletePost }) {
+
+  useEffect(() => {
+    getPosts();
+    console.log(getPosts());
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className='App'>
+      <CreatePost />
+      {posts.length ? posts.map(item => (
+        <Post deletePost={deletePost} id={item.id} key={item.id} title={item.title} body={item.body} />
+      )) : <h1>Posts not found</h1>}
     </div>
   );
 }
 
-export default App;
+export default connect(
+  ({ posts }) => ({ posts: posts.posts }),
+  {
+    getPosts: getPostsAction,
+    deletePost: deletePostAction
+  }
+)(App);
